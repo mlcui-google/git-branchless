@@ -484,6 +484,14 @@ fn prepare_messages(
         .as_str(),
     );
 
+    // Add a modeline for Vim users to activate column wrapping, syntax
+    // highlighting and other features.
+    // Vim's support for git messages does not work well with multiple commit
+    // messages, so only add it if there's one commit.
+    if commits.len() == 1 {
+        message.push_str(format!("\n{comment_char} vim: ft=gitcommit").as_str());
+    }
+
     let edited_message = edit_message_fn(&message)?;
     if edited_message == message {
         return Ok(PrepareMessagesResult::IdenticalMessage);
@@ -729,6 +737,7 @@ mod tests {
                     # Rewording: Please enter the commit message to apply to this 1 commit.
                     # Lines starting with '#' will be ignored, and an empty message aborts
                     # rewording.
+                    # vim: ft=gitcommit
                     "###);
                     Ok(message.to_string())
                 },
@@ -759,6 +768,7 @@ This is a template!
                     # Rewording: Please enter the commit message to apply to this 1 commit.
                     # Lines starting with '#' will be ignored, and an empty message aborts
                     # rewording.
+                    # vim: ft=gitcommit
                     "###);
                     Ok(message.to_string())
                 },
